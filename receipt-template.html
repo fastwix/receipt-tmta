@@ -1,82 +1,100 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <title>ใบเสร็จรับเงิน TMTA</title>
+  <meta charset="UTF-8">
+  <title>ใบเสร็จรับเงิน - TMTA</title>
   <style>
-    body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; font-size: 14px; }
-    .logo { width: 120px; }
-    .header, .footer { display: flex; justify-content: space-between; align-items: center; }
-    .title { text-align: center; font-size: 20px; font-weight: bold; margin: 20px 0; }
-    .section { margin: 10px 0; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-    .right { text-align: right; }
-    .gray { color: #555; font-size: 0.9em; }
-    .signatures td { height: 80px; text-align: center; vertical-align: bottom; }
-    .print-btn { display: none; }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      width: 210mm;
+      height: 297mm;
+      margin: 0;
+      padding: 20mm;
+      box-sizing: border-box;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #000;
+      padding: 8px;
+      text-align: center;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo {
+      width: 100px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+    .footer {
+      margin-top: 60px;
+      font-size: 0.9em;
+      text-align: right;
+    }
     @media print {
-      .print-btn { display: none; }
+      #printButton { display: none; }
     }
   </style>
 </head>
-<body onload="setTimeout(() => window.print(), 500)">
+<body>
   <div class="header">
-    <img src="https://static.wixstatic.com/media/699e55_3972a88b14b6412a810820cba7b9585b~mv2.png" alt="TMTA Logo" class="logo" />
-    <div>
-      <div><strong>สมาคมการค้าธุรกิจไทยมุสลิม</strong></div>
-      <div>100/111 หมู่ 1 ถนน เลียบทาง แยกวัดกู้</div>
-      <div>เขตบางตลาด กรุงเทพฯ 10530</div>
-      <div>โทรศัพท์: 062-3247991</div>
-      <div>เลขประจำตัวผู้เสียภาษี 0109558000123</div>
-    </div>
+    <img src="https://static.wixstatic.com/media/Logo%20TMTA.png" alt="TMTA Logo" class="logo">
+    <h2>ใบเสร็จรับเงิน / Receipt</h2>
   </div>
 
-  <div class="title">ใบเสร็จรับเงิน / ใบกำกับภาษี</div>
+  <table>
+    <tr><td>เลขที่ใบเสร็จ / Receipt No:</td><td id="receiptNo"></td><td>วันที่ / Date:</td><td id="date"></td></tr>
+    <tr><td colspan="4">ชื่อสมาชิก / Member Name: <span id="memberName"></span></td></tr>
+  </table>
 
-  <div class="section">
-    <table>
-      <tr><td>รหัสลูกค้า</td><td>680504</td><td>เลขที่ใบเสร็จ</td><td>680504</td></tr>
-      <tr><td>ชื่อลูกค้า</td><td>Varubase Cha-Thai Co.,LTD (นายก สมมะ)</td><td>วันที่</td><td>27/05/2568</td></tr>
-      <tr><td>ที่อยู่ลูกค้า</td><td colspan="3">เลขที่ 15 ซ.เจ้าคำ 38 แขวงคลองสามประเวศ เขตลาดกระบัง กรุงเทพมหานคร 10520</td></tr>
-    </table>
+  <table>
+    <thead>
+      <tr><th>ลำดับ</th><th>รายการ</th><th>จำนวน</th><th>ราคาต่อหน่วย</th><th>ส่วนลด</th><th>จำนวนเงิน</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td id="itemName"></td>
+        <td id="itemQty"></td>
+        <td id="itemPrice"></td>
+        <td id="itemDiscount"></td>
+        <td id="itemTotal"></td>
+      </tr>
+      <tr><td colspan="5" style="text-align:right">รวมเงินทั้งสิ้น / Total:</td><td id="totalText"></td></tr>
+      <tr><td colspan="6" style="text-align:left">( <span id="totalInWords"></span> )</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    TMTA - Thai Muslim Trade Association<br>
+    ขอบคุณที่ใช้บริการ / Thank you
   </div>
 
-  <div class="section">
-    <table>
-      <thead>
-        <tr><th>รหัสสินค้า</th><th>รายละเอียด</th><th>จำนวน</th><th>ราคาต่อหน่วย</th><th>ส่วนลด</th><th>จำนวนเงิน</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>01</td><td>สมัครสมาชิกใหม่</td><td>1 ea</td><td class="right">1,000.00</td><td class="right">-</td><td class="right">1,000.00</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <button id="printButton" onclick="window.print()">พิมพ์ใบเสร็จ</button>
 
-  <div class="section right">
-    <p><strong>รวมเป็นเงิน: 1,000.00</strong></p>
-    <p>ภาษีมูลค่าเพิ่ม 0.00%</p>
-    <p><strong>ยอดเงินสุทธิ: 1,000.00</strong></p>
-  </div>
+  <script>
+    window.addEventListener("message", function(event) {
+      const data = event.data;
+      if (!data || !data.receiptNo) return;
 
-  <div class="section gray">
-    <p><strong>บาท ONE THOUSAND BAHT ONLY</strong></p>
-    <p>ถ้าซื้อสินค้าไม่ถูกต้อง โปรดแจ้งภายใน 7 วันหลังจากเปิดบิล</p>
-  </div>
+      document.querySelector("#receiptNo").innerText = data.receiptNo;
+      document.querySelector("#date").innerText = data.date;
+      document.querySelector("#memberName").innerText = data.memberName;
+      document.querySelector("#itemName").innerText = data.item.name;
+      document.querySelector("#itemQty").innerText = data.item.quantity;
+      document.querySelector("#itemPrice").innerText = data.item.price;
+      document.querySelector("#itemDiscount").innerText = data.item.discount;
+      document.querySelector("#itemTotal").innerText = data.item.total;
+      document.querySelector("#totalText").innerText = data.totalText;
+      document.querySelector("#totalInWords").innerText = data.totalInWords;
 
-  <div class="section">
-    <table class="signatures">
-      <tr><td>ผู้รับสินค้า</td><td>ผู้ส่งสินค้า</td><td>ผู้รับเงิน</td><td>ผู้ตรวจสอบ</td></tr>
-      <tr><td>วันที่ ............</td><td>วันที่ ............</td><td>
-        <img src="https://static.wixstatic.com/media/699e55_23dd5ea573be42a4b9e58649d21494ed~mv2.png" height="50" /><br />
-        TMTA
-      </td><td>วันที่ ............</td></tr>
-    </table>
-  </div>
-
-  <div class="footer gray">
-    <p>ธนาคารกสิกรไทย บัญชีออมทรัพย์ เดอะมอลล์ งามวงศ์วาน<br />ชื่อบัญชี สมาคมการค้าธุรกิจไทยมุสลิม เลขที่บัญชี 022-8-93180-2</p>
-    <p>Contact: 065-727-4000 | Line ID: @tmta | Email: tmta1436@gmail.com</p>
-  </div>
+      setTimeout(() => window.print(), 500);
+    });
+  </script>
 </body>
 </html>
