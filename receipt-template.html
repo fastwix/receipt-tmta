@@ -2,99 +2,86 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>ใบเสร็จรับเงิน - TMTA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TMTA Receipt Viewer</title>
   <style>
     body {
       font-family: 'Sarabun', sans-serif;
-      width: 210mm;
-      height: 297mm;
-      margin: 0;
-      padding: 20mm;
-      box-sizing: border-box;
+      margin: 40px;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
     }
-    th, td {
-      border: 1px solid #000;
+    td, th {
+      border: 1px solid #ddd;
       padding: 8px;
-      text-align: center;
     }
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
+    .total-section {
+      margin-top: 40px;
     }
-    .logo {
-      width: 100px;
-      height: auto;
-      margin-bottom: 10px;
-    }
-    .footer {
-      margin-top: 60px;
-      font-size: 0.9em;
-      text-align: right;
-    }
-    @media print {
-      #printButton { display: none; }
+    #downloadBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <img src="https://static.wixstatic.com/media/Logo%20TMTA.png" alt="TMTA Logo" class="logo">
-    <h2>ใบเสร็จรับเงิน / Receipt</h2>
-  </div>
+  <h1>ใบเสร็จรับเงิน (Receipt)</h1>
+  <div id="receiptContainer"></div>
 
-  <table>
-    <tr><td>เลขที่ใบเสร็จ / Receipt No:</td><td id="receiptNo"></td><td>วันที่ / Date:</td><td id="date"></td></tr>
-    <tr><td colspan="4">ชื่อสมาชิก / Member Name: <span id="memberName"></span></td></tr>
-  </table>
-
-  <table>
-    <thead>
-      <tr><th>ลำดับ</th><th>รายการ</th><th>จำนวน</th><th>ราคาต่อหน่วย</th><th>ส่วนลด</th><th>จำนวนเงิน</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td id="itemName"></td>
-        <td id="itemQty"></td>
-        <td id="itemPrice"></td>
-        <td id="itemDiscount"></td>
-        <td id="itemTotal"></td>
-      </tr>
-      <tr><td colspan="5" style="text-align:right">รวมเงินทั้งสิ้น / Total:</td><td id="totalText"></td></tr>
-      <tr><td colspan="6" style="text-align:left">( <span id="totalInWords"></span> )</td></tr>
-    </tbody>
-  </table>
-
-  <div class="footer">
-    TMTA - Thai Muslim Trade Association<br>
-    ขอบคุณที่ใช้บริการ / Thank you
-  </div>
-
-  <button id="printButton" onclick="window.print()">พิมพ์ใบเสร็จ</button>
+  <button id="downloadBtn" onclick="window.print()">พิมพ์ / ดาวน์โหลด PDF</button>
 
   <script>
-    window.addEventListener("message", function(event) {
-      const data = event.data;
-      if (!data || !data.receiptNo) return;
+    const query = new URLSearchParams(window.location.search);
+    const dataStr = query.get('data');
+    if (!dataStr) {
+      document.getElementById('receiptContainer').innerHTML = '<p style="color:red;">ไม่พบข้อมูลใบเสร็จ</p>';
+    } else {
+      const data = JSON.parse(decodeURIComponent(dataStr));
 
-      document.querySelector("#receiptNo").innerText = data.receiptNo;
-      document.querySelector("#date").innerText = data.date;
-      document.querySelector("#memberName").innerText = data.memberName;
-      document.querySelector("#itemName").innerText = data.item.name;
-      document.querySelector("#itemQty").innerText = data.item.quantity;
-      document.querySelector("#itemPrice").innerText = data.item.price;
-      document.querySelector("#itemDiscount").innerText = data.item.discount;
-      document.querySelector("#itemTotal").innerText = data.item.total;
-      document.querySelector("#totalText").innerText = data.totalText;
-      document.querySelector("#totalInWords").innerText = data.totalInWords;
+      const html = `
+        <p><strong>เลขที่ใบเสร็จ:</strong> ${data.receiptNo}</p>
+        <p><strong>วันที่:</strong> ${data.date}</p>
+        <p><strong>รหัสสมาชิก:</strong> ${data.memberID || '-'}</p>
+        <p><strong>ชื่อสมาชิก:</strong> ${data.memberName}</p>
 
-      setTimeout(() => window.print(), 500);
-    });
+        <table>
+          <thead>
+            <tr>
+              <th>ลำดับ</th>
+              <th>รายการ</th>
+              <th>จำนวน</th>
+              <th>ราคา/หน่วย</th>
+              <th>ส่วนลด</th>
+              <th>รวม</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>${data.item.name}</td>
+              <td>${data.item.quantity}</td>
+              <td>${data.item.price}</td>
+              <td>${data.item.discount}</td>
+              <td>${data.item.total}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="total-section">
+          <p><strong>รวมทั้งสิ้น:</strong> ${data.totalText}</p>
+          <p><strong>(${data.totalInWords})</strong></p>
+        </div>
+      `;
+
+      document.getElementById('receiptContainer').innerHTML = html;
+    }
   </script>
 </body>
 </html>
