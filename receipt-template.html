@@ -3,85 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TMTA Receipt Viewer</title>
+  <title>ใบเสร็จรับเงิน TMTA</title>
   <style>
     body {
-      font-family: 'Sarabun', sans-serif;
-      margin: 40px;
+      font-family: Tahoma, sans-serif;
+      margin: 20px;
+      padding: 0;
+      max-width: 794px;
+      background: #fff;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header img {
+      height: 100px;
+    }
+    .title {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .section {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .flex {
+      display: flex;
+      justify-content: space-between;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 15px;
     }
-    td, th {
-      border: 1px solid #ddd;
-      padding: 8px;
+    table, th, td {
+      border: 1px solid black;
     }
-    .total-section {
-      margin-top: 40px;
+    th, td {
+      padding: 6px;
+      text-align: center;
+      font-size: 13px;
     }
-    #downloadBtn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
+    .footer {
+      margin-top: 30px;
+      font-size: 13px;
+    }
+    .right {
+      text-align: right;
+    }
+    @media print {
+      #printBtn { display: none; }
     }
   </style>
 </head>
 <body>
-  <h1>ใบเสร็จรับเงิน (Receipt)</h1>
-  <div id="receiptContainer"></div>
+  <div class="header">
+    <img src="https://static.wixstatic.com/media/3NnAFKc6PYhkEaHzu25v37.jpg" alt="TMTA Logo">
+    <div class="title">ใบเสร็จรับเงิน / ใบกำกับภาษี</div>
+  </div>
 
-  <button id="downloadBtn" onclick="window.print()">พิมพ์ / ดาวน์โหลด PDF</button>
+  <div class="section flex">
+    <div>เลขที่: <span id="receiptNo"></span></div>
+    <div>วันที่: <span id="date"></span></div>
+  </div>
+
+  <div class="section">
+    ได้รับเงินจาก: <span id="memberName"></span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ลำดับ</th>
+        <th>รายการ</th>
+        <th>จำนวน</th>
+        <th>ราคาต่อหน่วย</th>
+        <th>ส่วนลด</th>
+        <th>จำนวนเงิน</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td id="itemName"></td>
+        <td id="itemQty"></td>
+        <td id="itemPrice"></td>
+        <td id="itemDiscount"></td>
+        <td id="itemTotal"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section right">
+    รวมเป็นเงิน: <span id="totalText"></span><br>
+    จำนวนเงิน (ตัวอักษร): <span id="totalInWords"></span>
+  </div>
+
+  <div class="footer">
+    ออกโดย สมาคมการค้านักธุรกิจไทยมุสลิม (TMTA)<br>
+    โทร. 065-727-4000 | Line ID: @tmta | Email: tmta1436@gmail.com
+  </div>
+
+  <button id="printBtn" onclick="window.print()">🖨️ พิมพ์ใบเสร็จ</button>
 
   <script>
-    const query = new URLSearchParams(window.location.search);
-    const dataStr = query.get('data');
-    if (!dataStr) {
-      document.getElementById('receiptContainer').innerHTML = '<p style="color:red;">ไม่พบข้อมูลใบเสร็จ</p>';
-    } else {
-      const data = JSON.parse(decodeURIComponent(dataStr));
+    function decodeAndPopulate() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const dataParam = urlParams.get('data');
+      if (!dataParam) return;
 
-      const html = `
-        <p><strong>เลขที่ใบเสร็จ:</strong> ${data.receiptNo}</p>
-        <p><strong>วันที่:</strong> ${data.date}</p>
-        <p><strong>รหัสสมาชิก:</strong> ${data.memberID || '-'}</p>
-        <p><strong>ชื่อสมาชิก:</strong> ${data.memberName}</p>
+      try {
+        const decoded = decodeURIComponent(dataParam);
+        const json = JSON.parse(decoded);
 
-        <table>
-          <thead>
-            <tr>
-              <th>ลำดับ</th>
-              <th>รายการ</th>
-              <th>จำนวน</th>
-              <th>ราคา/หน่วย</th>
-              <th>ส่วนลด</th>
-              <th>รวม</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>${data.item.name}</td>
-              <td>${data.item.quantity}</td>
-              <td>${data.item.price}</td>
-              <td>${data.item.discount}</td>
-              <td>${data.item.total}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="total-section">
-          <p><strong>รวมทั้งสิ้น:</strong> ${data.totalText}</p>
-          <p><strong>(${data.totalInWords})</strong></p>
-        </div>
-      `;
-
-      document.getElementById('receiptContainer').innerHTML = html;
+        document.getElementById('receiptNo').innerText = json.receiptNo;
+        document.getElementById('date').innerText = json.date;
+        document.getElementById('memberName').innerText = json.memberName;
+        document.getElementById('itemName').innerText = json.item.name;
+        document.getElementById('itemQty').innerText = json.item.quantity;
+        document.getElementById('itemPrice').innerText = json.item.price;
+        document.getElementById('itemDiscount').innerText = json.item.discount;
+        document.getElementById('itemTotal').innerText = json.item.total;
+        document.getElementById('totalText').innerText = json.totalText;
+        document.getElementById('totalInWords').innerText = json.totalInWords;
+      } catch (e) {
+        console.error("❌ Failed to parse data:", e);
+      }
     }
+    decodeAndPopulate();
   </script>
 </body>
 </html>
