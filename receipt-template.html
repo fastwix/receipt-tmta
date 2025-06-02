@@ -1,50 +1,39 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <title>ใบเสร็จรับเงิน | TMTA</title>
-  <style>
-    body { font-family: sans-serif; padding: 30px; max-width: 700px; margin: auto; border: 1px solid #ddd; }
-    h2 { text-align: center; }
-    .logo { width: 120px; margin: 10px auto; display: block; }
-    .info, .footer { margin-top: 20px; }
-    .footer { text-align: center; font-size: 0.9em; color: #666; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    td, th { border: 1px solid #aaa; padding: 10px; text-align: left; }
-    .text-right { text-align: right; }
-    .btn { margin-top: 20px; text-align: center; }
-    @media print {
-      .btn { display: none; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใบเสร็จรับเงิน TMTA</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; }
+        .receipt { border: 1px solid #ddd; padding: 20px; }
+        .print-btn { margin-top: 10px; }
+    </style>
 </head>
-<body onload="setTimeout(() => window.print(), 500)">
-  <img src="logo.png" alt="TMTA Logo" class="logo" />
-  <h2>ใบเสร็จรับเงิน (Receipt)</h2>
+<body>
+    <div class="receipt">
+        <h2>ใบเสร็จรับเงิน TMTA</h2>
+        <p><strong>ชื่อสมาชิก:</strong> <span id="name"></span></p>
+        <p><strong>รหัสสมาชิก:</strong> <span id="memberId"></span></p>
+        <p><strong>ประเภทสมาชิก:</strong> <span id="plan"></span></p>
+        <p><strong>จำนวนเงิน:</strong> <span id="amount"></span> บาท</p>
+        <p><strong>วันที่ชำระเงิน:</strong> <span id="date"></span></p>
+        <button class="print-btn" onclick="window.print()">พิมพ์ใบเสร็จ</button>
+    </div>
 
-  <div class="info" id="receiptInfo"></div>
+    <script>
+        // รับข้อมูลจาก URL
+        const params = new URLSearchParams(window.location.search);
+        const data = params.get('data');
 
-  <div class="btn">
-    <button onclick="window.print()">🖨 พิมพ์ / ดาวน์โหลด PDF</button>
-  </div>
-
-  <div class="footer">
-    สมาคมการค้าไทยมุสลิม (TMTA) • www.thaimuslimtrade.com
-  </div>
-
-  <script>
-    const query = new URLSearchParams(window.location.search);
-    const data = JSON.parse(decodeURIComponent(query.get("data")));
-
-    document.getElementById("receiptInfo").innerHTML = `
-      <table>
-        <tr><th>ชื่อสมาชิก</th><td>${data.name}</td></tr>
-        <tr><th>รหัสสมาชิก</th><td>${data.memberId}</td></tr>
-        <tr><th>ประเภทสมาชิก</th><td>${data.plan}</td></tr>
-        <tr><th>จำนวนเงิน</th><td>${data.amount.toLocaleString()} บาท</td></tr>
-        <tr><th>วันที่ชำระเงิน</th><td>${data.date}</td></tr>
-      </table>
-    `;
-  </script>
+        if (data) {
+            const receiptData = JSON.parse(data);
+            document.getElementById("name").textContent = receiptData.name || "-";
+            document.getElementById("memberId").textContent = receiptData.memberId || "-";
+            document.getElementById("plan").textContent = receiptData.plan || "-";
+            document.getElementById("amount").textContent = receiptData.amount || "-";
+            document.getElementById("date").textContent = receiptData.date || "-";
+        }
+    </script>
 </body>
 </html>
