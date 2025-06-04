@@ -54,8 +54,7 @@
       text-align: right;
     }
     @media print {
-      #printBtn { display: none; }
-      #backBtn { display: none; }
+      #printBtn, #backBtn { display: none; }
     }
   </style>
 </head>
@@ -89,10 +88,10 @@
       <tr>
         <td>1</td>
         <td id="itemName"></td>
-        <td id="itemQty"></td>
-        <td id="itemPrice"></td>
-        <td id="itemDiscount"></td>
-        <td id="itemTotal"></td>
+        <td id="quantity"></td>
+        <td id="price"></td>
+        <td id="discount"></td>
+        <td id="total"></td>
       </tr>
     </tbody>
   </table>
@@ -108,8 +107,7 @@
   </div>
 
   <button id="printBtn" onclick="window.print()">🖨️ พิมพ์ใบเสร็จ</button>
-<button id="printBtn" onclick="window.print()">🖨️ พิมพ์ใบเสร็จ</button>
-<button id="backBtn" onclick="window.location.href='https://www.thaimuslimtrade.com/memberpayin'">🔙 ย้อนกลับ</button>
+  <button id="backBtn" onclick="window.location.href='https://www.thaimuslimtrade.com/memberpayin'">🔙 ย้อนกลับ</button>
 
   <script>
     function decodeAndPopulate() {
@@ -121,16 +119,16 @@
         const decoded = decodeURIComponent(dataParam);
         const json = JSON.parse(decoded);
 
-        document.getElementById('receiptNo').innerText = json.receiptNo;
-        document.getElementById('date').innerText = json.date;
-        document.getElementById('memberName').innerText = json.memberName;
-        document.getElementById('itemName').innerText = json.item.name;
-        document.getElementById('itemQty').innerText = json.item.quantity;
-        document.getElementById('itemPrice').innerText = json.item.price;
-        document.getElementById('itemDiscount').innerText = json.item.discount;
-        document.getElementById('itemTotal').innerText = json.item.total;
-        document.getElementById('totalText').innerText = json.totalText;
-        document.getElementById('totalInWords').innerText = json.totalInWords;
+        document.getElementById('receiptNo').innerText = json.receiptNo || '';
+        document.getElementById('date').innerText = json.date || '';
+        document.getElementById('memberName').innerText = json.memberName || '';
+        document.getElementById('itemName').innerText = json.itemName || '';
+        document.getElementById('quantity').innerText = json.quantity || '';
+        document.getElementById('price').innerText = json.price?.toLocaleString() || '';
+        document.getElementById('discount').innerText = json.discount || '0';
+        document.getElementById('total').innerText = json.total?.toLocaleString() || '';
+        document.getElementById('totalText').innerText = json.totalText?.toLocaleString() || '';
+        document.getElementById('totalInWords').innerText = json.totalInWords || '';
       } catch (e) {
         console.error("❌ Failed to parse data:", e);
       }
